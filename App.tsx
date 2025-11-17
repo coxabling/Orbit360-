@@ -1,6 +1,7 @@
 
 
-import React, { useState, useRef, FormEvent, useEffect } from 'react';
+
+import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
 import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon } from './components/Icons';
 
 // Helper component for triggering animations on scroll
@@ -204,16 +205,25 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isStep2Valid, setIsStep2Valid] = useState(false);
+
+  useEffect(() => {
+    if (currentStep === 2) {
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+      setIsStep2Valid(formData.name.trim() !== '' && isEmailValid);
+    }
+  }, [formData, currentStep]);
   
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     onClose();
     // Reset state after a delay to allow for closing animation
     setTimeout(() => {
       setCurrentStep(1);
       setIsSubmitted(false);
       setFormData({ eventType: 'Wedding', eventDate: '', estimatedGuests: '51-100', name: '', email: '', referralSource: 'Search Engine (Google, etc.)', details: '' });
+      setIsStep2Valid(false);
     }, 300);
-  };
+  }, [onClose]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -258,7 +268,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || !isStep2Valid) return;
     setIsSubmitting(true);
 
     const submissionData = {
@@ -376,7 +386,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
               <button onClick={handleBack} className="w-full px-8 py-3 font-bold text-starlight-white bg-gravity-grey/50 border border-gravity-grey rounded-full hover:bg-gravity-grey/80 transition-colors">
                 Back
               </button>
-              <button type="submit" disabled={isSubmitting} className="w-full px-8 py-3 font-bold text-starlight-white bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button type="submit" disabled={isSubmitting || !isStep2Valid} className="w-full px-8 py-3 font-bold text-starlight-white bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                 {isSubmitting ? 'Sending...' : 'Submit Enquiry'}
               </button>
             </div>
