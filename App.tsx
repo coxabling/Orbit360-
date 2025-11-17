@@ -1,7 +1,7 @@
 
 
 import React, { useState, useRef, FormEvent, useEffect } from 'react';
-import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon } from './components/Icons';
+import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon } from './components/Icons';
 
 // Helper component for triggering animations on scroll
 const AnimateOnScroll: React.FC<{ children: React.ReactNode, className?: string, delay?: number }> = ({ children, className = '', delay = 0 }) => {
@@ -199,6 +199,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
     estimatedGuests: '51-100',
     name: '',
     email: '',
+    referralSource: 'Search Engine (Google, etc.)',
     details: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -210,7 +211,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
     setTimeout(() => {
       setCurrentStep(1);
       setIsSubmitted(false);
-      setFormData({ eventType: 'Wedding', eventDate: '', estimatedGuests: '51-100', name: '', email: '', details: '' });
+      setFormData({ eventType: 'Wedding', eventDate: '', estimatedGuests: '51-100', name: '', email: '', referralSource: 'Search Engine (Google, etc.)', details: '' });
     }, 300);
   };
 
@@ -261,7 +262,13 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
     setIsSubmitting(true);
 
     const submissionData = {
-      ...formData,
+      "Event Type": formData.eventType,
+      "Event Date": formData.eventDate,
+      "Estimated Guests": formData.estimatedGuests,
+      "Name": formData.name,
+      "Email": formData.email,
+      "How did you hear about us?": formData.referralSource,
+      "Additional Details": formData.details,
       _subject: `Orbit360 Motion Enquiry: ${formData.eventType} on ${formData.eventDate || 'Not specified'}`,
     };
 
@@ -351,6 +358,16 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
               <label htmlFor="email" className="block text-sm font-medium text-orbit-grey mb-1">Your Email</label>
               <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="jane.doe@example.com" required className="w-full bg-gravity-grey/30 border border-gravity-grey rounded-md py-3 px-4 text-starlight-white placeholder-orbit-grey/70 focus:outline-none focus:ring-2 focus:ring-orbit-blue" />
             </div>
+            <div>
+              <label htmlFor="referralSource" className="block text-sm font-medium text-orbit-grey mb-1">How did you hear about us?</label>
+              <select id="referralSource" name="referralSource" value={formData.referralSource} onChange={handleInputChange} required className="w-full bg-gravity-grey/30 border border-gravity-grey rounded-md py-3 px-4 text-starlight-white placeholder-orbit-grey/70 focus:outline-none focus:ring-2 focus:ring-orbit-blue">
+                <option>Search Engine (Google, etc.)</option>
+                <option>Social Media (Instagram, Facebook, etc.)</option>
+                <option>Referral from a friend</option>
+                <option>Saw us at an event</option>
+                <option>Other</option>
+              </select>
+            </div>
              <div>
               <label htmlFor="details" className="block text-sm font-medium text-orbit-grey mb-1">Additional Details</label>
               <textarea id="details" name="details" value={formData.details} onChange={handleInputChange} placeholder="Venue, special requests, etc." rows={3} className="w-full bg-gravity-grey/30 border border-gravity-grey rounded-md py-3 px-4 text-starlight-white placeholder-orbit-grey/70 focus:outline-none focus:ring-2 focus:ring-orbit-blue"></textarea>
@@ -408,18 +425,27 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
   );
 };
 
+const galleryImages = [
+    { src: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1974&auto=format&fit=crop', alt: 'A woman joyfully tossing confetti at a vibrant party, capturing a moment of pure celebration.' },
+    { src: 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1974&auto=format&fit=crop', alt: 'An elegant couple dancing closely at a wedding, surrounded by warm, romantic lighting.' },
+    { src: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop', alt: 'A group of friends sharing a laugh and a good time at an outdoor social event.' },
+    { src: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop', alt: 'Professionals celebrating a milestone at a modern corporate event, showcasing team success.' },
+    { src: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop', alt: 'Guests dancing and celebrating under dazzling lights at a high-energy party.' },
+];
 
 export default function App() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const heroRef = useRef<HTMLElement>(null);
   const experienceRef = useRef<HTMLElement>(null);
   const eventsRef = useRef<HTMLElement>(null);
+  const galleryRef = useRef<HTMLElement>(null);
   const processRef = useRef<HTMLElement>(null);
   const faqRef = useRef<HTMLElement>(null);
   
-  const videoRef = useRef<HTMLVideoElement>(null);
   const particleLayerRef1 = useRef<HTMLDivElement>(null);
   const particleLayerRef2 = useRef<HTMLDivElement>(null);
 
@@ -428,6 +454,22 @@ export default function App() {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const openGallery = (index: number) => setSelectedImageIndex(index);
+  const closeGallery = () => {
+    setSelectedImageIndex(null);
+    setIsZoomed(false);
+  };
+  const goToNextImage = () => {
+    if (selectedImageIndex === null) return;
+    setIsZoomed(false);
+    setSelectedImageIndex((selectedImageIndex + 1) % galleryImages.length);
+  };
+  const goToPrevImage = () => {
+    if (selectedImageIndex === null) return;
+    setIsZoomed(false);
+    setSelectedImageIndex((selectedImageIndex - 1 + galleryImages.length) % galleryImages.length);
+  };
+  
   const bubbles = [
     { size: 25, left: '10%', duration: '20s', delay: '0s' },
     { size: 40, left: '20%', duration: '22s', delay: '3s' },
@@ -440,31 +482,31 @@ export default function App() {
     { size: 22, left: '75%', duration: '29s', delay: '4s' },
   ];
 
-  // Effect for scroll-based video playback rate
+  // Effect for modal behavior (body scroll lock and keyboard nav)
   useEffect(() => {
-    const handleScroll = () => {
-      if (videoRef.current) {
-        const scrollY = window.scrollY;
-        const newRate = 1 + scrollY / 250;
-        videoRef.current.playbackRate = Math.min(Math.max(1, newRate), 4);
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Effect for modal behavior (body scroll lock)
-  useEffect(() => {
-    const isAnyModalOpen = isVideoModalOpen || isBookingModalOpen;
+    const isAnyModalOpen = isVideoModalOpen || isBookingModalOpen || selectedImageIndex !== null;
 
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = 'auto';
-      };
+    } else {
+      document.body.style.overflow = 'auto';
     }
-  }, [isVideoModalOpen, isBookingModalOpen]);
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedImageIndex !== null) {
+        if (e.key === 'Escape') closeGallery();
+        if (e.key === 'ArrowRight') goToNextImage();
+        if (e.key === 'ArrowLeft') goToPrevImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = 'auto';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isVideoModalOpen, isBookingModalOpen, selectedImageIndex]);
 
   // Effect for hero parallax
   useEffect(() => {
@@ -508,6 +550,7 @@ export default function App() {
           <nav className="hidden md:flex items-center space-x-6">
             <a href="#experience" onClick={(e) => handleNavClick(e, experienceRef)} className="text-sm font-medium text-orbit-grey hover:text-starlight-white transition-colors duration-200">Experience</a>
             <a href="#events" onClick={(e) => handleNavClick(e, eventsRef)} className="text-sm font-medium text-orbit-grey hover:text-starlight-white transition-colors duration-200">Events</a>
+            <a href="#gallery" onClick={(e) => handleNavClick(e, galleryRef)} className="text-sm font-medium text-orbit-grey hover:text-starlight-white transition-colors duration-200">Gallery</a>
             <a href="#process" onClick={(e) => handleNavClick(e, processRef)} className="text-sm font-medium text-orbit-grey hover:text-starlight-white transition-colors duration-200">Process</a>
             <a href="#faq" onClick={(e) => handleNavClick(e, faqRef)} className="text-sm font-medium text-orbit-grey hover:text-starlight-white transition-colors duration-200">FAQ</a>
              <button
@@ -531,16 +574,11 @@ export default function App() {
 
       <main>
         <section id="home" ref={heroRef} className="h-screen flex flex-col justify-center items-center text-center relative overflow-hidden">
-          <div className="absolute inset-0 z-0" aria-hidden="true">
-            <video
-              ref={videoRef}
-              src="https://videos.pexels.com/video-files/8068593/8068593-hd_1920_1080_25fps.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-            ></video>
+          <div
+            className="absolute inset-0 z-0 bg-cover bg-center"
+            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1531685250784-7569952593d2?q=80&w=2574&auto=format&fit=crop')" }}
+            aria-hidden="true"
+          >
             <div className="absolute inset-0 bg-black/60"></div>
           </div>
           <div className="hero-bg-animated" aria-hidden="true"></div>
@@ -690,7 +728,35 @@ export default function App() {
           </div>
         </section>
         
-        <section id="process" ref={processRef} className="py-20 bg-black/50">
+        <section id="gallery" ref={galleryRef} className="py-20 bg-black/50">
+          <div className="container mx-auto px-6">
+            <AnimateOnScroll>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-montserrat font-bold text-starlight-white">Moments in Motion</h2>
+                <p className="mt-4 text-orbit-grey max-w-xl mx-auto">See the fun, energy, and unforgettable moments captured by our 360° booth.</p>
+              </div>
+            </AnimateOnScroll>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {galleryImages.map((image, index) => (
+                    <AnimateOnScroll key={index} delay={index * 100}>
+                        <div 
+                            className="group relative aspect-square w-full h-full overflow-hidden rounded-lg cursor-pointer"
+                            onClick={() => openGallery(index)}
+                        >
+                            <img 
+                                src={image.src} 
+                                alt={image.alt}
+                                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300"></div>
+                        </div>
+                    </AnimateOnScroll>
+                ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="process" ref={processRef} className="py-20">
           <div className="container mx-auto px-6">
             <AnimateOnScroll>
               <div className="text-center mb-16">
@@ -712,7 +778,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="faq" ref={faqRef} className="py-20">
+        <section id="faq" ref={faqRef} className="py-20 bg-black/50">
           <div className="container mx-auto px-6">
             <AnimateOnScroll>
               <div className="text-center mb-12">
@@ -730,7 +796,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="contact" className="py-20 bg-black/50">
+        <section id="contact" className="py-20">
            <div className="container mx-auto px-6">
             <AnimateOnScroll>
               <div className="max-w-xl mx-auto text-center">
@@ -781,6 +847,61 @@ export default function App() {
                 allowFullScreen
                 title="Orbit360 Motion Example Video"
             ></iframe>
+          </div>
+        </div>
+      )}
+
+      {selectedImageIndex !== null && (
+        <div
+          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={closeGallery}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image Gallery"
+        >
+          <div
+            className="relative w-full h-full flex items-center justify-center animate-scale-in"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="relative flex flex-col items-center justify-center w-full h-full">
+              <div className="w-full h-full flex items-center justify-center">
+                <img
+                  src={galleryImages[selectedImageIndex].src}
+                  alt={galleryImages[selectedImageIndex].alt}
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  className={`max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 ease-in-out ${isZoomed ? 'scale-150' : 'scale-100'} ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
+                />
+              </div>
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-4xl text-center p-2 rounded-md bg-black/60 backdrop-blur-sm pointer-events-none">
+                <p className="text-starlight-white text-sm">
+                  {/* Fix: Corrected typo from `selectedImage-index` to `selectedImageIndex`. */}
+                  {galleryImages[selectedImageIndex].alt}
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={closeGallery}
+              className="absolute top-4 right-4 z-10 text-starlight-white bg-gravity-grey/50 rounded-full p-1.5 hover:bg-gravity-grey transition-colors"
+              aria-label="Close image gallery"
+            >
+              <CloseIcon />
+            </button>
+
+            <button
+              onClick={goToPrevImage}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
+              aria-label="Previous image"
+            >
+              <ChevronLeftIcon />
+            </button>
+            <button
+              onClick={goToNextImage}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
+              aria-label="Next image"
+            >
+              <ChevronRightIcon />
+            </button>
           </div>
         </div>
       )}
