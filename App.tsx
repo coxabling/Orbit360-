@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
 import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon } from './components/Icons';
 
@@ -205,14 +202,28 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isStep2Valid, setIsStep2Valid] = useState(false);
+  const [formErrors, setFormErrors] = useState<{ name?: string; email?: string }>({});
+
+  const validateStep2 = useCallback(() => {
+    const errors: { name?: string; email?: string } = {};
+    if (!formData.name.trim()) {
+      errors.name = 'Your name is required.';
+    }
+    if (!formData.email.trim()) {
+      errors.email = 'Your email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  }, [formData.name, formData.email]);
 
   useEffect(() => {
+    // Real-time validation for step 2
     if (currentStep === 2) {
-      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
-      setIsStep2Valid(formData.name.trim() !== '' && isEmailValid);
+      validateStep2();
     }
-  }, [formData, currentStep]);
+  }, [formData.name, formData.email, currentStep, validateStep2]);
   
   const handleClose = useCallback(() => {
     onClose();
@@ -221,7 +232,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
       setCurrentStep(1);
       setIsSubmitted(false);
       setFormData({ eventType: 'Wedding', eventDate: '', estimatedGuests: '51-100', name: '', email: '', referralSource: 'Search Engine (Google, etc.)', details: '' });
-      setIsStep2Valid(false);
+      setFormErrors({});
     }, 300);
   }, [onClose]);
 
@@ -268,7 +279,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (isSubmitting || !isStep2Valid) return;
+    if (isSubmitting || !validateStep2()) return;
     setIsSubmitting(true);
 
     const submissionData = {
@@ -362,11 +373,21 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
             <h3 className="text-2xl font-montserrat font-bold text-center">Step 2: Your Details</h3>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-orbit-grey mb-1">Your Name</label>
-              <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} placeholder="Jane Doe" required className="w-full bg-gravity-grey/30 border border-gravity-grey rounded-md py-3 px-4 text-starlight-white placeholder-orbit-grey/70 focus:outline-none focus:ring-2 focus:ring-orbit-blue" />
+              <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} placeholder="Jane Doe" required 
+                className={`w-full bg-gravity-grey/30 border rounded-md py-3 px-4 text-starlight-white placeholder-orbit-grey/70 focus:outline-none focus:ring-2 transition-colors ${formErrors.name ? 'border-red-500 focus:ring-red-500' : 'border-gravity-grey focus:ring-orbit-blue'}`}
+                aria-invalid={!!formErrors.name}
+                aria-describedby={formErrors.name ? "name-error" : undefined}
+              />
+              {formErrors.name && <p id="name-error" className="mt-1 text-sm text-red-400">{formErrors.name}</p>}
             </div>
              <div>
               <label htmlFor="email" className="block text-sm font-medium text-orbit-grey mb-1">Your Email</label>
-              <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="jane.doe@example.com" required className="w-full bg-gravity-grey/30 border border-gravity-grey rounded-md py-3 px-4 text-starlight-white placeholder-orbit-grey/70 focus:outline-none focus:ring-2 focus:ring-orbit-blue" />
+              <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="jane.doe@example.com" required 
+                className={`w-full bg-gravity-grey/30 border rounded-md py-3 px-4 text-starlight-white placeholder-orbit-grey/70 focus:outline-none focus:ring-2 transition-colors ${formErrors.email ? 'border-red-500 focus:ring-red-500' : 'border-gravity-grey focus:ring-orbit-blue'}`}
+                aria-invalid={!!formErrors.email}
+                aria-describedby={formErrors.email ? "email-error" : undefined}
+               />
+               {formErrors.email && <p id="email-error" className="mt-1 text-sm text-red-400">{formErrors.email}</p>}
             </div>
             <div>
               <label htmlFor="referralSource" className="block text-sm font-medium text-orbit-grey mb-1">How did you hear about us?</label>
@@ -386,7 +407,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
               <button onClick={handleBack} className="w-full px-8 py-3 font-bold text-starlight-white bg-gravity-grey/50 border border-gravity-grey rounded-full hover:bg-gravity-grey/80 transition-colors">
                 Back
               </button>
-              <button type="submit" disabled={isSubmitting || !isStep2Valid} className="w-full px-8 py-3 font-bold text-starlight-white bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button type="submit" disabled={isSubmitting || Object.keys(formErrors).length > 0} className="w-full px-8 py-3 font-bold text-starlight-white bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                 {isSubmitting ? 'Sending...' : 'Submit Enquiry'}
               </button>
             </div>
