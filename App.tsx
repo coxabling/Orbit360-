@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
-import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon, DownloadIcon } from './components/Icons';
+import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon } from './components/Icons';
 
 // Helper component for triggering animations on scroll
 const AnimateOnScroll: React.FC<{ children: React.ReactNode, className?: string, delay?: number }> = ({ children, className = '', delay = 0 }) => {
@@ -458,15 +458,23 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
 };
 
 interface GalleryItem {
-  type: 'video' | 'embed';
+  type: 'video';
   src: string;
   alt: string;
   poster: string;
-  downloadLink?: string; // Added optional downloadLink
 }
 
 const galleryItems: GalleryItem[] = [
-    { type: 'embed', src: 'https://app.snap360app.com/gallery/8bSbkINGwJgI1GI1h864clEefgB2/35199', poster: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069&auto=format&fit=crop', alt: 'Snap360 video highlight from a vibrant event.', downloadLink: 'https://app.snap360app.com/gallery/8bSbkINGwJgI1GI1h864clEefgB2/35199' }
+    { type: 'video', src: 'https://drive.google.com/uc?id=1Vi4nOBsZ0Y8Aqu3PgLDucQWmL96jM1w_', poster: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1974&auto=format&fit=crop', alt: 'Wedding guests enjoying the 360 booth, capturing a dynamic slow-motion video.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=1wZcBB1HVGeek2heAmicdXUWwpWyfN53E', poster: 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1974&auto=format&fit=crop', alt: 'A corporate event booth capturing branded 360 videos for social media promotion.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=1D_FsFLE0BIBMr4A7gXnIyI0l6AMLDkNr', poster: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop', alt: 'Friends having a blast at a party, spinning on the 360 video platform.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=1BdLaU9ygt1HQndtlF3Dnz9eAThZbouG3', poster: 'https://images.unsplash.com/photo-1595180637172-c288b488d02c?q=80&w=2070&auto=format&fit=crop', alt: 'Birthday celebration with guests making fun, shareable 360 videos.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=11DF2mcETdbdPY3zCBQXIVbnjU03907Z8', poster: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069&auto=format&fit=crop', alt: 'Graduation party guests celebrating with memorable 360 videos.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=1c1ybrlNG7u9t2HbOHO3fhwdbqIQ-b5NF', poster: 'https://images.unsplash.com/photo-151906906152-a5e297805178?q=80&w=2070&auto=format&fit=crop', alt: 'A festive event with diverse attendees showcasing their moves in the video booth.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=1OBQos6OsP1Dy7Z49eikkdb2YgtCcdJeO', poster: 'https://images.unsplash.com/photo-151906906152-a5e297805178?q=80&w=2070&auto=format&fit=crop', alt: 'Guests at a social gathering striking poses for the dynamic 360 video.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=13DR7fPMwky3Ag5N8PDrES_U3Uh_xp5w', poster: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop', alt: 'Engaging moments captured at a themed party with custom video overlays.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=1Kyju_WERZ3u1zSMFcnwp5YlSXlUvOoiJ', poster: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069&auto=format&fit=crop', alt: 'A high-energy dance party with guests making unique 360 video clips.' },
+    { type: 'video', src: 'https://drive.google.com/uc?id=19yy7h-vVA4e6AT0xOBMVBLObgEyz9PWN', poster: 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1974&auto=format&fit=crop', alt: 'Product launch event featuring a 360 video experience for brand activation.' },
 ];
 
 export default function App() {
@@ -574,8 +582,6 @@ export default function App() {
     };
   }, []);
 
-
-  const currentGalleryItem = selectedImageIndex !== null ? galleryItems[selectedImageIndex] : null;
 
   return (
     <div className="bg-deep-space-black min-h-screen bg-gradient-radial">
@@ -888,7 +894,7 @@ export default function App() {
         </div>
       )}
 
-      {selectedImageIndex !== null && currentGalleryItem && (
+      {selectedImageIndex !== null && (
         <div
           className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
           onClick={closeGallery}
@@ -901,47 +907,24 @@ export default function App() {
             onClick={e => e.stopPropagation()}
           >
             <div className="relative flex flex-col items-center justify-center w-full h-full">
-              <div className="w-full max-w-3xl aspect-video md:max-h-[85vh] flex items-center justify-center bg-black rounded-lg shadow-2xl"> {/* Added bg-black and rounded-lg for consistency */}
-                {currentGalleryItem.type === 'video' ? (
-                  <video
-                      src={currentGalleryItem.src}
-                      poster={currentGalleryItem.poster}
-                      controls
-                      autoPlay
-                      loop
-                      playsInline
-                      className="w-full h-full object-contain rounded-lg"
-                      aria-label={`Playing video: ${currentGalleryItem.alt}`}
-                  >
-                      Your browser does not support the video tag.
-                  </video>
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-center p-4 h-full w-full">
-                    <p className="text-starlight-white text-lg mb-4">
-                      This content cannot be embedded directly due to security restrictions from the source website.
-                      </p>
-                    <p className="text-orbit-grey text-md mb-6">
-                      Please click the button below to view it on the original platform.
-                    </p>
-                    {currentGalleryItem.downloadLink && (
-                      <a 
-                        href={currentGalleryItem.downloadLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="flex items-center text-starlight-white px-6 py-3 font-bold bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300 shadow-lg"
-                        aria-label="View on Snap360"
-                      >
-                        <DownloadIcon /> View on Snap360
-                      </a>
-                    )}
-                  </div>
-                )}
+              <div className="w-full max-w-3xl aspect-video md:max-h-[85vh] flex items-center justify-center"> {/* Adjusted aspect ratio for common videos */}
+                <video
+                    src={galleryItems[selectedImageIndex].src}
+                    poster={galleryItems[selectedImageIndex].poster}
+                    controls
+                    autoPlay
+                    loop
+                    playsInline
+                    className="w-full h-full object-contain rounded-lg shadow-2xl bg-black"
+                    aria-label={`Playing video: ${galleryItems[selectedImageIndex].alt}`}
+                >
+                    Your browser does not support the video tag.
+                </video>
               </div>
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-4xl text-center p-2 rounded-md bg-black/60 backdrop-blur-sm pointer-events-none flex flex-col sm:flex-row justify-center items-center gap-2">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-4xl text-center p-2 rounded-md bg-black/60 backdrop-blur-sm pointer-events-none">
                 <p className="text-starlight-white text-sm">
-                  {currentGalleryItem.alt}
+                  {galleryItems[selectedImageIndex].alt}
                 </p>
-                {/* The 'View on Snap360' button is already handled above within the conditional rendering for embed type */}
               </div>
             </div>
 
@@ -953,24 +936,20 @@ export default function App() {
               <CloseIcon />
             </button>
 
-            {galleryItems.length > 1 && ( /* Only show nav buttons if there's more than one item */
-              <>
-                <button
-                  onClick={goToPrevImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
-                  aria-label="Previous video"
-                >
-                  <ChevronLeftIcon />
-                </button>
-                <button
-                  onClick={goToNextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
-                  aria-label="Next video"
-                >
-                  <ChevronRightIcon />
-                </button>
-              </>
-            )}
+            <button
+              onClick={goToPrevImage}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
+              aria-label="Previous video"
+            >
+              <ChevronLeftIcon />
+            </button>
+            <button
+              onClick={goToNextImage}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
+              aria-label="Next video"
+            >
+              <ChevronRightIcon />
+            </button>
           </div>
         </div>
       )}
