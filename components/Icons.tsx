@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 
 export const CameraIcon = () => (
@@ -77,5 +76,17 @@ export const ChevronLeftIcon = () => (
 export const ChevronRightIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+);
+
+export const PlayIcon: React.FC<{ className?: string }> = ({ className = '' }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={`h-12 w-12 ${className}`} fill="currentColor" viewBox="0 0 24 24">
+        <path d="M8 5v14l11-7z" />
+    </svg>
+);
+
+export const DownloadIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H5a2 2 0 01-2-2V7a2 2 0 012-2h5.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
     </svg>
 );

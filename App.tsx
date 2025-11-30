@@ -1,5 +1,5 @@
 import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
-import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon } from './components/Icons';
+import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon, DownloadIcon } from './components/Icons';
 
 // Helper component for triggering animations on scroll
 const AnimateOnScroll: React.FC<{ children: React.ReactNode, className?: string, delay?: number }> = ({ children, className = '', delay = 0 }) => {
@@ -29,7 +29,7 @@ const AnimateOnScroll: React.FC<{ children: React.ReactNode, className?: string,
     return () => {
       if (currentRef) {
         observer.unobserve(currentRef);
-      }
+      };
     };
   }, []);
 
@@ -456,19 +456,23 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
   );
 };
 
-const galleryImages = [
-    { src: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1974&auto=format&fit=crop', alt: 'A woman joyfully tossing confetti at a vibrant party, capturing a moment of pure celebration.' },
-    { src: 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1974&auto=format&fit=crop', alt: 'An elegant couple dancing closely at a wedding, surrounded by warm, romantic lighting.' },
-    { src: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop', alt: 'A group of friends sharing a laugh and a good time at an outdoor social event.' },
-    { src: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop', alt: 'Professionals celebrating a milestone at a modern corporate event, showcasing team success.' },
-    { src: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=2070&auto=format&fit=crop', alt: 'Guests dancing and celebrating under dazzling lights at a high-energy party.' },
+interface GalleryItem {
+  type: 'video' | 'embed';
+  src: string;
+  alt: string;
+  poster: string;
+  downloadLink?: string; // Added optional downloadLink
+}
+
+const galleryItems: GalleryItem[] = [
+    { type: 'embed', src: 'https://app.snap360app.com/gallery/8bSbkINGwJgI1GI1h864clEefgB2/35199', poster: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069&auto=format&fit=crop', alt: 'Snap360 video highlight from a vibrant event.', downloadLink: 'https://app.snap360app.com/gallery/8bSbkINGwJgI1GI1h864clEefgB2/35199' }
 ];
 
 export default function App() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
-  const [isZoomed, setIsZoomed] = useState(false);
+  // Removed isZoomed state as it's not applicable to videos.
 
   const heroRef = useRef<HTMLElement>(null);
   const experienceRef = useRef<HTMLElement>(null);
@@ -488,17 +492,17 @@ export default function App() {
   const openGallery = (index: number) => setSelectedImageIndex(index);
   const closeGallery = () => {
     setSelectedImageIndex(null);
-    setIsZoomed(false);
+    // Removed setIsZoomed(false);
   };
   const goToNextImage = () => {
     if (selectedImageIndex === null) return;
-    setIsZoomed(false);
-    setSelectedImageIndex((selectedImageIndex + 1) % galleryImages.length);
+    // Removed setIsZoomed(false);
+    setSelectedImageIndex((selectedImageIndex + 1) % galleryItems.length);
   };
   const goToPrevImage = () => {
     if (selectedImageIndex === null) return;
-    setIsZoomed(false);
-    setSelectedImageIndex((selectedImageIndex - 1 + galleryImages.length) % galleryImages.length);
+    // Removed setIsZoomed(false);
+    setSelectedImageIndex((selectedImageIndex - 1 + galleryItems.length) % galleryItems.length);
   };
   
   const bubbles = [
@@ -537,7 +541,7 @@ export default function App() {
       document.body.style.overflow = 'auto';
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isVideoModalOpen, isBookingModalOpen, selectedImageIndex]);
+  }, [isVideoModalOpen, isBookingModalOpen, selectedImageIndex, goToNextImage, goToPrevImage]);
 
   // Effect for hero parallax
   useEffect(() => {
@@ -768,18 +772,17 @@ export default function App() {
               </div>
             </AnimateOnScroll>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {galleryImages.map((image, index) => (
+                {galleryItems.map((item, index) => (
                     <AnimateOnScroll key={index} delay={index * 100}>
                         <div 
-                            className="group relative aspect-square w-full h-full overflow-hidden rounded-lg cursor-pointer"
+                            className="group relative aspect-square w-full h-full overflow-hidden rounded-lg cursor-pointer bg-cover bg-center"
                             onClick={() => openGallery(index)}
+                            style={{ backgroundImage: `url(${item.poster})` }}
+                            aria-label={`Open video for ${item.alt}`}
                         >
-                            <img 
-                                src={image.src} 
-                                alt={image.alt}
-                                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-300"
-                            />
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300"></div>
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
+                                <PlayIcon className="text-starlight-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-110" />
+                            </div>
                         </div>
                     </AnimateOnScroll>
                 ))}
@@ -888,33 +891,61 @@ export default function App() {
           onClick={closeGallery}
           role="dialog"
           aria-modal="true"
-          aria-label="Image Gallery"
+          aria-label="Video Gallery"
         >
           <div
-            className="relative w-full h-full flex items-center justify-center animate-scale-in"
+            className="relative w-full h-full flex flex-col items-center justify-center animate-scale-in"
             onClick={e => e.stopPropagation()}
           >
             <div className="relative flex flex-col items-center justify-center w-full h-full">
-              <div className="w-full h-full flex items-center justify-center">
-                <img
-                  src={galleryImages[selectedImageIndex].src}
-                  alt={galleryImages[selectedImageIndex].alt}
-                  onClick={() => setIsZoomed(!isZoomed)}
-                  className={`max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 ease-in-out ${isZoomed ? 'scale-150' : 'scale-100'} ${isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
-                />
+              <div className="w-full max-w-3xl aspect-video md:max-h-[85vh] flex items-center justify-center"> {/* Adjusted aspect ratio for common videos */}
+                {galleryItems[selectedImageIndex].type === 'video' ? (
+                  <video
+                      src={galleryItems[selectedImageIndex].src}
+                      poster={galleryItems[selectedImageIndex].poster}
+                      controls
+                      autoPlay
+                      loop
+                      playsInline
+                      className="w-full h-full object-contain rounded-lg shadow-2xl bg-black"
+                      aria-label={`Playing video: ${galleryItems[selectedImageIndex].alt}`}
+                  >
+                      Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <iframe
+                      src={galleryItems[selectedImageIndex].src}
+                      frameBorder="0"
+                      allow="autoplay; fullscreen"
+                      allowFullScreen
+                      className="w-full h-full object-contain rounded-lg shadow-2xl bg-black"
+                      title={galleryItems[selectedImageIndex].alt}
+                      aria-label={`Playing embedded video: ${galleryItems[selectedImageIndex].alt}`}
+                  ></iframe>
+                )}
               </div>
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-4xl text-center p-2 rounded-md bg-black/60 backdrop-blur-sm pointer-events-none">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-4xl text-center p-2 rounded-md bg-black/60 backdrop-blur-sm pointer-events-none flex flex-col sm:flex-row justify-center items-center gap-2">
                 <p className="text-starlight-white text-sm">
-                  {/* Fix: Corrected typo from `selectedImage-index` to `selectedImageIndex`. */}
-                  {galleryImages[selectedImageIndex].alt}
+                  {galleryItems[selectedImageIndex].alt}
                 </p>
+                {galleryItems[selectedImageIndex].downloadLink && (
+                  <a 
+                    href={galleryItems[selectedImageIndex].downloadLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center text-starlight-white text-sm bg-gravity-grey/50 px-3 py-1 rounded-full hover:bg-gravity-grey transition-colors pointer-events-auto"
+                    aria-label="Download video"
+                  >
+                    <DownloadIcon /> Download Video
+                  </a>
+                )}
               </div>
             </div>
 
             <button
               onClick={closeGallery}
               className="absolute top-4 right-4 z-10 text-starlight-white bg-gravity-grey/50 rounded-full p-1.5 hover:bg-gravity-grey transition-colors"
-              aria-label="Close image gallery"
+              aria-label="Close video gallery"
             >
               <CloseIcon />
             </button>
@@ -922,14 +953,14 @@ export default function App() {
             <button
               onClick={goToPrevImage}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
-              aria-label="Previous image"
+              aria-label="Previous video"
             >
               <ChevronLeftIcon />
             </button>
             <button
               onClick={goToNextImage}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
-              aria-label="Next image"
+              aria-label="Next video"
             >
               <ChevronRightIcon />
             </button>
