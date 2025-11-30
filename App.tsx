@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
 import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon, DownloadIcon } from './components/Icons';
 
@@ -574,6 +575,8 @@ export default function App() {
   }, []);
 
 
+  const currentGalleryItem = selectedImageIndex !== null ? galleryItems[selectedImageIndex] : null;
+
   return (
     <div className="bg-deep-space-black min-h-screen bg-gradient-radial">
       <header className="fixed top-0 left-0 right-0 z-50 bg-deep-space-black/80 backdrop-blur-sm border-b border-gravity-grey">
@@ -885,7 +888,7 @@ export default function App() {
         </div>
       )}
 
-      {selectedImageIndex !== null && (
+      {selectedImageIndex !== null && currentGalleryItem && (
         <div
           className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
           onClick={closeGallery}
@@ -898,47 +901,47 @@ export default function App() {
             onClick={e => e.stopPropagation()}
           >
             <div className="relative flex flex-col items-center justify-center w-full h-full">
-              <div className="w-full max-w-3xl aspect-video md:max-h-[85vh] flex items-center justify-center"> {/* Adjusted aspect ratio for common videos */}
-                {galleryItems[selectedImageIndex].type === 'video' ? (
+              <div className="w-full max-w-3xl aspect-video md:max-h-[85vh] flex items-center justify-center bg-black rounded-lg shadow-2xl"> {/* Added bg-black and rounded-lg for consistency */}
+                {currentGalleryItem.type === 'video' ? (
                   <video
-                      src={galleryItems[selectedImageIndex].src}
-                      poster={galleryItems[selectedImageIndex].poster}
+                      src={currentGalleryItem.src}
+                      poster={currentGalleryItem.poster}
                       controls
                       autoPlay
                       loop
                       playsInline
-                      className="w-full h-full object-contain rounded-lg shadow-2xl bg-black"
-                      aria-label={`Playing video: ${galleryItems[selectedImageIndex].alt}`}
+                      className="w-full h-full object-contain rounded-lg"
+                      aria-label={`Playing video: ${currentGalleryItem.alt}`}
                   >
                       Your browser does not support the video tag.
                   </video>
                 ) : (
-                  <iframe
-                      src={galleryItems[selectedImageIndex].src}
-                      frameBorder="0"
-                      allow="autoplay; fullscreen"
-                      allowFullScreen
-                      className="w-full h-full object-contain rounded-lg shadow-2xl bg-black"
-                      title={galleryItems[selectedImageIndex].alt}
-                      aria-label={`Playing embedded video: ${galleryItems[selectedImageIndex].alt}`}
-                  ></iframe>
+                  <div className="flex flex-col items-center justify-center text-center p-4 h-full w-full">
+                    <p className="text-starlight-white text-lg mb-4">
+                      This content cannot be embedded directly due to security restrictions from the source website.
+                      </p>
+                    <p className="text-orbit-grey text-md mb-6">
+                      Please click the button below to view it on the original platform.
+                    </p>
+                    {currentGalleryItem.downloadLink && (
+                      <a 
+                        href={currentGalleryItem.downloadLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="flex items-center text-starlight-white px-6 py-3 font-bold bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300 shadow-lg"
+                        aria-label="View on Snap360"
+                      >
+                        <DownloadIcon /> View on Snap360
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-4xl text-center p-2 rounded-md bg-black/60 backdrop-blur-sm pointer-events-none flex flex-col sm:flex-row justify-center items-center gap-2">
                 <p className="text-starlight-white text-sm">
-                  {galleryItems[selectedImageIndex].alt}
+                  {currentGalleryItem.alt}
                 </p>
-                {galleryItems[selectedImageIndex].downloadLink && (
-                  <a 
-                    href={galleryItems[selectedImageIndex].downloadLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center text-starlight-white text-sm bg-gravity-grey/50 px-3 py-1 rounded-full hover:bg-gravity-grey transition-colors pointer-events-auto"
-                    aria-label="Download video"
-                  >
-                    <DownloadIcon /> Download Video
-                  </a>
-                )}
+                {/* The 'View on Snap360' button is already handled above within the conditional rendering for embed type */}
               </div>
             </div>
 
@@ -950,20 +953,24 @@ export default function App() {
               <CloseIcon />
             </button>
 
-            <button
-              onClick={goToPrevImage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
-              aria-label="Previous video"
-            >
-              <ChevronLeftIcon />
-            </button>
-            <button
-              onClick={goToNextImage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
-              aria-label="Next video"
-            >
-              <ChevronRightIcon />
-            </button>
+            {galleryItems.length > 1 && ( /* Only show nav buttons if there's more than one item */
+              <>
+                <button
+                  onClick={goToPrevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
+                  aria-label="Previous video"
+                >
+                  <ChevronLeftIcon />
+                </button>
+                <button
+                  onClick={goToNextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
+                  aria-label="Next video"
+                >
+                  <ChevronRightIcon />
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
