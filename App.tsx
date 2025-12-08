@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
 import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon } from './components/Icons';
 
@@ -296,7 +294,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
     };
 
     try {
-      await fetch('https://formsubmit.co/ajax/moxabling@gmail.com', {
+      await fetch('https://formsubmit.co/ajax/info@orbit360motion.co.uk', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -852,15 +850,29 @@ export default function App() {
                 >
                   Check Availability & Pricing
                 </button>
+                <div className="mt-8">
+                  <p className="text-orbit-grey">
+                    Or call us directly: <a href="tel:07511286975" className="text-starlight-white font-bold hover:text-orbit-pink transition-colors">07511 286 975</a>
+                  </p>
+                </div>
               </div>
             </AnimateOnScroll>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-gravity-grey">
-        <div className="container mx-auto px-6 py-6 text-center text-orbit-grey">
-          <p>&copy; {new Date().getFullYear()} Orbit360 Motion. All Rights Reserved.</p>
+      <footer className="border-t border-gravity-grey bg-black/40 backdrop-blur-md">
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center text-orbit-grey text-sm">
+            <div className="mb-4 md:mb-0">
+              <p>&copy; {new Date().getFullYear()} Orbit360 Motion. All Rights Reserved.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6">
+               <a href="tel:07511286975" className="hover:text-starlight-white transition-colors font-medium">07511 286 975</a>
+               <span className="hidden sm:inline text-gravity-grey">|</span>
+               <a href="mailto:info@orbit360motion.co.uk" className="hover:text-starlight-white transition-colors font-medium">info@orbit360motion.co.uk</a>
+            </div>
+          </div>
         </div>
       </footer>
 
