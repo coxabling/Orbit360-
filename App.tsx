@@ -1,5 +1,5 @@
 import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
-import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon } from './components/Icons';
+import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon } from './components/Icons';
 
 // Helper component for triggering animations on scroll
 const AnimateOnScroll: React.FC<{ children: React.ReactNode, className?: string, delay?: number }> = ({ children, className = '', delay = 0 }) => {
@@ -456,31 +456,9 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
   );
 };
 
-interface GalleryItem {
-  type: 'video';
-  src: string;
-  alt: string;
-  poster: string;
-}
-
-const galleryItems: GalleryItem[] = [
-    { type: 'video', src: 'https://drive.google.com/uc?id=1Vi4nOBsZ0Y8Aqu3PgLDucQWmL96jM1w_', poster: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1974&auto=format&fit=crop', alt: 'Wedding guests enjoying the 360 booth, capturing a dynamic slow-motion video.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=1wZcBB1HVGeek2heAmicdXUWwpWyfN53E', poster: 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1974&auto=format&fit=crop', alt: 'A corporate event booth capturing branded 360 videos for social media promotion.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=1D_FsFLE0BIBMr4A7gXnIyI0l6AMLDkNr', poster: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop', alt: 'Friends having a blast at a party, spinning on the 360 video platform.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=1BdLaU9ygt1HQndtlF3Dnz9eAThZbouG3', poster: 'https://images.unsplash.com/photo-1595180637172-c288b488d02c?q=80&w=2070&auto=format&fit=crop', alt: 'Birthday celebration with guests making fun, shareable 360 videos.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=11DF2mcETdbdPY3zCBQXIVbnjU03907Z8', poster: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069&auto=format&fit=crop', alt: 'Graduation party guests celebrating with memorable 360 videos.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=1c1ybrlNG7u9t2HbOHO3fhwdbqIQ-b5NF', poster: 'https://images.unsplash.com/photo-151906906152-a5e297805178?q=80&w=2070&auto=format&fit=crop', alt: 'A festive event with diverse attendees showcasing their moves in the video booth.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=1OBQos6OsP1Dy7Z49eikkdb2YgtCcdJeO', poster: 'https://images.unsplash.com/photo-151906906152-a5e297805178?q=80&w=2070&auto=format&fit=crop', alt: 'Guests at a social gathering striking poses for the dynamic 360 video.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=13DR7fPMwky3Ag5N8PDrES_U3Uh_xp5w', poster: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=2069&auto=format&fit=crop', alt: 'Engaging moments captured at a themed party with custom video overlays.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=1Kyju_WERZ3u1zSMFcnwp5YlSXlUvOoiJ', poster: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069&auto=format&fit=crop', alt: 'A high-energy dance party with guests making unique 360 video clips.' },
-    { type: 'video', src: 'https://drive.google.com/uc?id=19yy7h-vVA4e6AT0xOBMVBLObgEyz9PWN', poster: 'https://images.unsplash.com/photo-1522158637959-30385a09e0da?q=80&w=1974&auto=format&fit=crop', alt: 'Product launch event featuring a 360 video experience for brand activation.' },
-];
-
 export default function App() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
-  // Removed isZoomed state as it's not applicable to videos.
 
   const heroRef = useRef<HTMLElement>(null);
   const experienceRef = useRef<HTMLElement>(null);
@@ -496,22 +474,6 @@ export default function App() {
     e.preventDefault();
     ref.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  const openGallery = (index: number) => setSelectedImageIndex(index);
-  const closeGallery = () => {
-    setSelectedImageIndex(null);
-    // Removed setIsZoomed(false);
-  };
-  const goToNextImage = () => {
-    if (selectedImageIndex === null) return;
-    // Removed setIsZoomed(false);
-    setSelectedImageIndex((selectedImageIndex + 1) % galleryItems.length);
-  };
-  const goToPrevImage = () => {
-    if (selectedImageIndex === null) return;
-    // Removed setIsZoomed(false);
-    setSelectedImageIndex((selectedImageIndex - 1 + galleryItems.length) % galleryItems.length);
-  };
   
   const bubbles = [
     { size: 25, left: '10%', duration: '20s', delay: '0s' },
@@ -525,9 +487,9 @@ export default function App() {
     { size: 22, left: '75%', duration: '29s', delay: '4s' },
   ];
 
-  // Effect for modal behavior (body scroll lock and keyboard nav)
+  // Effect for modal behavior (body scroll lock)
   useEffect(() => {
-    const isAnyModalOpen = isVideoModalOpen || isBookingModalOpen || selectedImageIndex !== null;
+    const isAnyModalOpen = isVideoModalOpen || isBookingModalOpen;
 
     if (isAnyModalOpen) {
       document.body.style.overflow = 'hidden';
@@ -535,21 +497,10 @@ export default function App() {
       document.body.style.overflow = 'auto';
     }
     
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (selectedImageIndex !== null) {
-        if (e.key === 'Escape') closeGallery();
-        if (e.key === 'ArrowRight') goToNextImage();
-        if (e.key === 'ArrowLeft') goToPrevImage();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
     return () => {
       document.body.style.overflow = 'auto';
-      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isVideoModalOpen, isBookingModalOpen, selectedImageIndex, goToNextImage, goToPrevImage]);
+  }, [isVideoModalOpen, isBookingModalOpen]);
 
   // Effect for hero parallax
   useEffect(() => {
@@ -782,22 +733,20 @@ export default function App() {
                 <p className="mt-4 text-orbit-grey max-w-xl mx-auto">See the fun, energy, and unforgettable moments captured by our 360° booth.</p>
               </div>
             </AnimateOnScroll>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {galleryItems.map((item, index) => (
-                    <AnimateOnScroll key={index} delay={index * 100}>
-                        <div 
-                            className="group relative aspect-square w-full h-full overflow-hidden rounded-lg cursor-pointer bg-cover bg-center"
-                            onClick={() => openGallery(index)}
-                            style={{ backgroundImage: `url(${item.poster})` }}
-                            aria-label={`Open video for ${item.alt}`}
-                        >
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
-                                <PlayIcon className="text-starlight-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-110" />
-                            </div>
-                        </div>
-                    </AnimateOnScroll>
-                ))}
-            </div>
+            <AnimateOnScroll delay={200}>
+                <div className="max-w-4xl mx-auto rounded-xl overflow-hidden shadow-2xl shadow-orbit-purple/20 border border-gravity-grey/50">
+                    <div className="relative pb-[56.25%] h-0">
+                        <iframe 
+                            className="absolute top-0 left-0 w-full h-full"
+                            src="https://www.youtube.com/embed/e-_9LXYkQXE?rel=0" 
+                            title="Orbit360 Moments in Motion"
+                            frameBorder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowFullScreen>
+                        </iframe>
+                    </div>
+                </div>
+            </AnimateOnScroll>
           </div>
         </section>
 
@@ -910,66 +859,6 @@ export default function App() {
         </div>
       )}
 
-      {selectedImageIndex !== null && (
-        <div
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
-          onClick={closeGallery}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Video Gallery"
-        >
-          <div
-            className="relative w-full h-full flex flex-col items-center justify-center animate-scale-in"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="relative flex flex-col items-center justify-center w-full h-full">
-              <div className="w-full max-w-3xl aspect-video md:max-h-[85vh] flex items-center justify-center"> {/* Adjusted aspect ratio for common videos */}
-                <video
-                    src={galleryItems[selectedImageIndex].src}
-                    poster={galleryItems[selectedImageIndex].poster}
-                    controls
-                    autoPlay
-                    loop
-                    playsInline
-                    className="w-full h-full object-contain rounded-lg shadow-2xl bg-black"
-                    aria-label={`Playing video: ${galleryItems[selectedImageIndex].alt}`}
-                >
-                    Your browser does not support the video tag.
-                </video>
-              </div>
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-4xl text-center p-2 rounded-md bg-black/60 backdrop-blur-sm pointer-events-none">
-                <p className="text-starlight-white text-sm">
-                  {galleryItems[selectedImageIndex].alt}
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={closeGallery}
-              className="absolute top-4 right-4 z-10 text-starlight-white bg-gravity-grey/50 rounded-full p-1.5 hover:bg-gravity-grey transition-colors"
-              aria-label="Close video gallery"
-            >
-              <CloseIcon />
-            </button>
-
-            <button
-              onClick={goToPrevImage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
-              aria-label="Previous video"
-            >
-              <ChevronLeftIcon />
-            </button>
-            <button
-              onClick={goToNextImage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-starlight-white bg-gravity-grey/50 rounded-full p-2 hover:bg-gravity-grey transition-colors"
-              aria-label="Next video"
-            >
-              <ChevronRightIcon />
-            </button>
-          </div>
-        </div>
-      )}
-      
       <BookingModal isOpen={isBookingModalOpen} onClose={() => setIsBookingModalOpen(false)} />
 
     </div>
