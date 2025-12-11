@@ -1,5 +1,5 @@
 import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
-import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon } from './components/Icons';
+import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon } from './components/Icons';
 
 // Helper component for triggering animations on scroll
 const AnimateOnScroll: React.FC<{ children: React.ReactNode, className?: string, delay?: number }> = ({ children, className = '', delay = 0 }) => {
@@ -596,17 +596,18 @@ export default function App() {
                 </span>
               </div>
             </h1>
-            <div className="overflow-hidden animate-slide-in-reveal" style={{ animationDelay: '0.3s' }}>
-                <div className="marquee-container text-xl text-orbit-grey font-semibold tracking-wider my-8">
+            
+            <div className="overflow-hidden animate-slide-in-reveal" style={{ animationDelay: '0.35s' }}>
+                <div className="marquee-container text-xl text-orbit-grey font-semibold tracking-wider mb-8">
                     <div className="marquee-content">
-                        <span className="mr-8">Motion-Powered Memories.</span>
+                        <span className="mr-8">Where every moment comes full circle.</span>
                         <span className="text-orbit-purple mr-8">◆</span>
-                        <span className="mr-8">Motion-Powered Memories.</span>
+                        <span className="mr-8">Where every moment comes full circle.</span>
                         <span className="text-orbit-purple mr-8">◆</span>
                         
-                        <span className="mr-8" aria-hidden="true">Motion-Powered Memories.</span>
+                        <span className="mr-8" aria-hidden="true">Where every moment comes full circle.</span>
                         <span className="text-orbit-purple mr-8" aria-hidden="true">◆</span>
-                        <span className="mr-8" aria-hidden="true">Motion-Powered Memories.</span>
+                        <span className="mr-8" aria-hidden="true">Where every moment comes full circle.</span>
                         <span className="text-orbit-purple mr-8" aria-hidden="true">◆</span>
                     </div>
                 </div>
@@ -615,7 +616,7 @@ export default function App() {
               <button
                   onClick={() => setIsBookingModalOpen(true)}
                   className="inline-block px-8 py-4 font-bold text-starlight-white bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300 shadow-lg shadow-orbit-purple/40 animate-slide-in-reveal"
-                  style={{animationDelay: '0.45s'}}
+                  style={{animationDelay: '0.5s'}}
               >
                 Check Availability
               </button>
