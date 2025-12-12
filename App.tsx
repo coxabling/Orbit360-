@@ -537,8 +537,9 @@ export default function App() {
     <div className="bg-deep-space-black min-h-screen bg-gradient-radial">
       <header className="fixed top-0 left-0 right-0 z-50 bg-deep-space-black/80 backdrop-blur-sm border-b border-gravity-grey">
         <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <a href="#home" onClick={(e) => handleNavClick(e, heroRef)} aria-label="Orbit360 Motion Home">
+          <a href="#home" onClick={(e) => handleNavClick(e, heroRef)} aria-label="Orbit360 Motion Home" className="flex items-center gap-3">
             <img src="https://images.weserv.nl/?url=https://drive.google.com/uc?id=1VK38pjDEEhupTjG7jgWOgetVUTPcppzY" alt="Orbit360 Motion Logo" className="h-10" />
+            <span className="font-montserrat font-bold text-xl tracking-wide text-starlight-white hidden sm:block">Orbit 360 Motion</span>
           </a>
           
           <nav className="hidden md:flex items-center space-x-6">
