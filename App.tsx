@@ -291,6 +291,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
       "How did you hear about us?": formData.referralSource,
       "Additional Details": formData.details,
       _subject: `Orbit360 Motion Enquiry: ${formData.eventType} on ${formData.eventDate || 'Not specified'}`,
+      _cc: 'orbit360motion@gmail.com',
     };
 
     try {
