@@ -866,10 +866,10 @@ export default function App() {
               <CloseIcon />
             </button>
             <iframe
-                src="https://drive.google.com/file/d/1LH3x5EcCYVKxX91aJTMaMxfIuIzwkXBl/preview"
+                src="https://www.youtube.com/embed/3hKEFVxr1eQ?autoplay=1&rel=0&modestbranding=1"
                 className="w-full h-full"
                 frameBorder="0"
-                allow="autoplay; fullscreen"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 title="Orbit360 Motion Example Video"
             ></iframe>
