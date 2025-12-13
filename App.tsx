@@ -1,5 +1,5 @@
 import React, { useState, useRef, FormEvent, useEffect, useCallback } from 'react';
-import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon } from './components/Icons';
+import { CameraIcon, GearIcon, SparklesIcon, VideoIcon, CloseIcon, FacebookIcon, InstagramIcon, YouTubeIcon, TwitterIcon, LinkedInIcon, ChevronDownIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, PlayIcon } from './components/Icons';
 
 // Helper component for triggering animations on scroll
 const AnimateOnScroll: React.FC<{ children: React.ReactNode, className?: string, delay?: number }> = ({ children, className = '', delay = 0 }) => {
@@ -827,6 +827,18 @@ export default function App() {
                <a href="tel:07511286975" className="hover:text-starlight-white transition-colors font-medium">07511 286 975</a>
                <span className="hidden sm:inline text-gravity-grey">|</span>
                <a href="mailto:info@orbit360motion.co.uk" className="hover:text-starlight-white transition-colors font-medium">info@orbit360motion.co.uk</a>
+               <span className="hidden sm:inline text-gravity-grey">|</span>
+               <div className="flex items-center space-x-4">
+                 <a href="https://www.facebook.com/profile.php?id=61583879221656" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook" className="hover:text-starlight-white transition-colors">
+                   <FacebookIcon />
+                 </a>
+                 <a href="https://www.instagram.com/orbit360motion/" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram" className="hover:text-starlight-white transition-colors">
+                   <InstagramIcon />
+                 </a>
+                 <a href="https://www.youtube.com/@Orbit360Motion" target="_blank" rel="noopener noreferrer" aria-label="Subscribe to our YouTube channel" className="hover:text-starlight-white transition-colors">
+                   <YouTubeIcon />
+                 </a>
+               </div>
             </div>
           </div>
         </div>
