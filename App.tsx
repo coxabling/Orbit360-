@@ -292,6 +292,8 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
       "Additional Details": formData.details,
       _subject: `Orbit360 Motion Enquiry: ${formData.eventType} on ${formData.eventDate || 'Not specified'}`,
       _cc: 'orbit360motion@gmail.com',
+      _template: 'table',
+      _captcha: 'false'
     };
 
     try {
