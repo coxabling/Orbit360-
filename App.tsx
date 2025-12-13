@@ -287,7 +287,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
       "Event Date": formData.eventDate,
       "Estimated Guests": formData.estimatedGuests,
       "Name": formData.name,
-      "Email": formData.email,
+      "email": formData.email, // FormSubmit uses lowercase 'email' for auto-reply-to
       "How did you hear about us?": formData.referralSource,
       "Additional Details": formData.details,
       _subject: `Orbit360 Motion Enquiry: ${formData.eventType} on ${formData.eventDate || 'Not specified'}`,
