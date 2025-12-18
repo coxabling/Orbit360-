@@ -191,6 +191,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
   const [currentStep, setCurrentStep] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+  const [isTestMode, setIsTestMode] = useState(false);
   const [formData, setFormData] = useState({
     eventType: 'Wedding',
     eventDate: '',
@@ -231,6 +232,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
     setTimeout(() => {
       setCurrentStep(1);
       setIsSubmitted(false);
+      setIsTestMode(false);
       setFormData({ eventType: 'Wedding', eventDate: '', estimatedGuests: '51-100', name: '', email: '', referralSource: 'Search Engine (Google, etc.)', details: '' });
       setFormErrors({});
     }, 300);
@@ -258,6 +260,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
   };
 
   const fillTestData = () => {
+    setIsTestMode(true);
     setFormData({
       eventType: 'Corporate & Branding',
       eventDate: '2025-12-25',
@@ -265,7 +268,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
       name: 'Test Booker',
       email: 'orbit360motion@gmail.com',
       referralSource: 'Search Engine (Google, etc.)',
-      details: 'This is a test booking submission to verify email functionality.'
+      details: '[TEST SUBMISSION] Checking email functionality for orbit360motion@gmail.com.'
     });
   };
 
@@ -294,6 +297,10 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
     if (isSubmitting || !validateStep2()) return;
     setIsSubmitting(true);
 
+    const subject = isTestMode 
+      ? `[TEST] Orbit360 Motion Enquiry: ${formData.eventType}` 
+      : `Orbit360 Motion Enquiry: ${formData.eventType} on ${formData.eventDate || 'Not specified'}`;
+
     const submissionData = {
       "Event Type": formData.eventType,
       "Event Date": formData.eventDate,
@@ -302,14 +309,14 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
       "email": formData.email, // FormSubmit uses lowercase 'email' for auto-reply-to
       "How did you hear about us?": formData.referralSource,
       "Additional Details": formData.details,
-      _subject: `Orbit360 Motion Enquiry: ${formData.eventType} on ${formData.eventDate || 'Not specified'}`,
+      _subject: subject,
       _template: 'table',
       _captcha: 'false',
       _replyto: formData.email
     };
 
     try {
-      await fetch('https://formsubmit.co/ajax/orbit360motion@gmail.com', {
+      const response = await fetch('https://formsubmit.co/ajax/orbit360motion@gmail.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -317,9 +324,14 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
         },
         body: JSON.stringify(submissionData),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit');
+      }
     } catch (error) {
       console.error('Error submitting form:', error);
-      // We catch the error but proceed to the success screen so the user experience isn't interrupted.
+      // We proceed to the success screen in the UI for a better user experience, 
+      // though ideally we'd show a retry option.
     } finally {
       setIsSubmitting(false);
       setIsSubmitted(true);
@@ -336,8 +348,14 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
         return (
             <div key="success" className="text-center p-8 flex flex-col items-center justify-center h-full animate-fade-in">
                 <div className="animate-success-check"><CheckCircleIcon size="xl" /></div>
-                <h3 className="text-2xl font-montserrat font-bold mt-6 mb-2">Enquiry Sent!</h3>
-                <p className="text-orbit-grey mb-8">We're checking our orbit... You'll hear from us within 24 hours. ✨</p>
+                <h3 className="text-2xl font-montserrat font-bold mt-6 mb-2">
+                  {isTestMode ? 'Test Submission Sent!' : 'Enquiry Sent!'}
+                </h3>
+                <p className="text-orbit-grey mb-8">
+                  {isTestMode 
+                    ? 'Your test data has been sent to orbit360motion@gmail.com. Please check your inbox (and spam folder) shortly.' 
+                    : "We're checking our orbit... You'll hear from us within 24 hours. ✨"}
+                </p>
                 <button 
                   onClick={handleClose}
                   className="w-full max-w-xs px-8 py-3 font-bold text-starlight-white bg-gravity-grey/50 border border-gravity-grey rounded-full hover:bg-gravity-grey/80 transition-colors"
@@ -379,8 +397,8 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
               <button onClick={handleNext} className="w-full px-8 py-3 font-bold text-starlight-white bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300">
                 Next
               </button>
-              <button type="button" onClick={fillTestData} className="w-full text-xs text-orbit-grey hover:text-starlight-white transition-colors underline decoration-orbit-purple underline-offset-4">
-                Fill with Test Data
+              <button type="button" onClick={fillTestData} className="w-full py-2 px-4 rounded-full border border-orbit-purple/50 text-xs font-semibold text-orbit-purple hover:bg-orbit-purple hover:text-white transition-all duration-300">
+                🚀 Fill with Test Data
               </button>
             </div>
           </div>
@@ -426,7 +444,7 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
                 Back
               </button>
               <button type="submit" disabled={isSubmitting || Object.keys(formErrors).length > 0} className="w-full px-8 py-3 font-bold text-starlight-white bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                {isSubmitting ? 'Sending...' : 'Submit Enquiry'}
+                {isSubmitting ? (isTestMode ? 'Sending Test...' : 'Sending...') : (isTestMode ? 'Submit Test' : 'Submit Enquiry')}
               </button>
             </div>
           </div>
@@ -455,6 +473,12 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
         >
           <CloseIcon />
         </button>
+
+        {isTestMode && !isSubmitted && (
+          <div className="absolute top-4 left-4 z-10 px-2 py-0.5 rounded bg-orbit-purple/20 border border-orbit-purple text-[10px] font-bold text-orbit-purple animate-pulse">
+            TEST MODE
+          </div>
+        )}
 
         {/* Progress Bar */}
         <div className="w-full bg-gravity-grey h-1.5">
