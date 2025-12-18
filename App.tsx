@@ -257,6 +257,18 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const fillTestData = () => {
+    setFormData({
+      eventType: 'Corporate & Branding',
+      eventDate: '2025-12-25',
+      estimatedGuests: '101-200',
+      name: 'Test Booker',
+      email: 'orbit360motion@gmail.com',
+      referralSource: 'Search Engine (Google, etc.)',
+      details: 'This is a test booking submission to verify email functionality.'
+    });
+  };
+
   const handleNext = () => {
     if (isAnimating) return;
     setIsAnimating(true);
@@ -291,13 +303,13 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
       "How did you hear about us?": formData.referralSource,
       "Additional Details": formData.details,
       _subject: `Orbit360 Motion Enquiry: ${formData.eventType} on ${formData.eventDate || 'Not specified'}`,
-      _cc: 'orbit360motion@gmail.com',
       _template: 'table',
-      _captcha: 'false'
+      _captcha: 'false',
+      _replyto: formData.email
     };
 
     try {
-      await fetch('https://formsubmit.co/ajax/info@orbit360motion.co.uk', {
+      await fetch('https://formsubmit.co/ajax/orbit360motion@gmail.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -363,9 +375,12 @@ const BookingModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOp
                 <option>200+</option>
               </select>
             </div>
-            <div className="pt-4">
+            <div className="pt-4 space-y-3">
               <button onClick={handleNext} className="w-full px-8 py-3 font-bold text-starlight-white bg-gradient-to-r from-orbit-pink via-orbit-purple to-orbit-blue rounded-full hover:scale-105 transform transition-transform duration-300">
                 Next
+              </button>
+              <button type="button" onClick={fillTestData} className="w-full text-xs text-orbit-grey hover:text-starlight-white transition-colors underline decoration-orbit-purple underline-offset-4">
+                Fill with Test Data
               </button>
             </div>
           </div>
